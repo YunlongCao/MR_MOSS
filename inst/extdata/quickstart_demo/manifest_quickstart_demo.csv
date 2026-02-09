@@ -1,5 +1,0 @@
-trait,raw_path,source_type,snp_col,a1_col,a2_col,beta_col,se_col,z_col,p_col,n_col,n_value,note
-Ground_coffee_consumption,raw/Ground_coffee_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,50000,Self-contained demo exposure
-Emotional_neglect,raw/Emotional_neglect,formatted,,,,,,,,,,Self-contained demo outcome
-Physical_abuse,raw/Physical_abuse,formatted,,,,,,,,,,Self-contained demo outcome
-Sexual_abuse,raw/Sexual_abuse,formatted,,,,,,,,,,Self-contained demo outcome

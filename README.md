@@ -10,6 +10,8 @@ remotes::install_github("YunlongCao/MR_MOSS")
 library(MRMOSS)
 ```
 
+`MRMOSS` contains C++ code. If installation fails at compile step, install a C/C++ build toolchain first.
+
 ## Built-in formatted real-data example
 
 The package includes formatted GWAS files for:

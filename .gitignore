@@ -31,6 +31,9 @@ MRMOSS.Rcheck/
 /Simulation_sec2_FDR2*.txt
 /runEyedisease*.txt
 /runPositivecontrol*.txt
+/src/*.o
+/src/*.so
+/src/*.dll
 
 # Legacy root-level analysis scripts kept local only
 /GIFT_*.cpp

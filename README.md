@@ -1,100 +1,86 @@
 # MRMOSS
 
-MRMOSS is packaged as an installable R project for multi-outcome Mendelian randomization.
+MRMOSS is an R package for multi-outcome Mendelian randomization with summary statistics.
 
-This repository now supports a verified minimal end-to-end pipeline:
+This repository is organized so users can run:
 
-- start from raw summary statistics
-- format traits to MRMOSS standard columns
-- run MR-MOSS and write final result tables
+- raw summary statistics -> formatted files
+- formatted files -> final MR-MOSS result table
 
-## 1. Install
+## 1. Prerequisites
+
+- R >= 4.1
+- A working C/C++ toolchain for compiling `src/`
+- PLINK binary (or `plinkbinr`)
+
+If `Rscript` is not in PATH, activate your R environment first (for example your conda env).
+
+## 2. Install
+
+### Option A (recommended): install from GitHub
 
 ```r
-# install.packages("devtools")
-devtools::install_github("<your-org>/<your-repo>")
+# install.packages("remotes")
+remotes::install_github("YunlongCao/MR_MOSS")
 library(MRMOSS)
 ```
 
-## 2. Configure Data Paths
+### Option B: install from a local clone
 
-Set data roots used by `inst/config/raw_data_manifest.csv`:
-
-```r
-Sys.setenv(
-  MVP_SUMMARYDATA = "/path/to/MVP_summarydata",
-  UKB_SUMMARYDATA = "/path/to/ukb_summarydata",
-  GWAS_CATALOG_SUMMARYDATA = "/path/to/GWAS_catalog_summarydata",
-  MRMOSS_INTERNAL_DATA = "/path/to/internal_data"
-)
+```bash
+git clone git@github.com:YunlongCao/MR_MOSS.git
+cd MR_MOSS
+R CMD INSTALL .
 ```
 
-Set LD reference panel prefix (without `.bed/.bim/.fam`):
+## 3. Quickstart (minimum end-to-end run)
 
-```r
-reference_prefix <- "/path/to/reference/EUR"
-```
+This is the easiest path to verify the pipeline from raw input to final MR-MOSS output.
 
-If `plinkbinr` is unavailable, provide PLINK path with `MRMOSS_PLINK_BIN`.
-
-## 3. Quickstart (Verified Raw -> Result)
-
-The fastest reproducible path is a minimal real-data run:
+Quickstart uses:
 
 - exposure: `Ground_coffee_consumption`
 - outcomes: `Emotional_neglect`, `Physical_abuse`, `Sexual_abuse`
-- threshold: `5e-7`
+- IV threshold: `5e-7`
 
-### Option A: one script
+### Required environment variables for quickstart
 
-From a repository clone:
+Only two paths are required:
+
+- `MRMOSS_INTERNAL_DATA`: directory containing quickstart raw files
+- `MRMOSS_REFERENCE_PREFIX`: LD reference prefix (without `.bed/.bim/.fam`)
+
+Optional:
+
+- `MRMOSS_PLINK_BIN`: explicit path to PLINK executable
+- `MRMOSS_FORMATTED_DIR`, `MRMOSS_OUTPUT_DIR`: output locations
+
+### One-command quickstart (from repository root)
 
 ```bash
+export MRMOSS_INTERNAL_DATA=/path/to/internal_data
+export MRMOSS_REFERENCE_PREFIX=/path/to/reference/EUR
+# optional: export MRMOSS_PLINK_BIN=/path/to/plink
+
 Rscript inst/scripts/00_quickstart_raw_to_result.R
 ```
 
-Useful env vars:
+Expected outputs (default under `results/quickstart_minimal`):
 
-- `MRMOSS_PROJECT_ROOT` (default `.`)
-- `MRMOSS_MANIFEST` (default packaged manifest)
-- `MRMOSS_FORMATTED_DIR`
-- `MRMOSS_OUTPUT_DIR`
-- `MRMOSS_REFERENCE_PREFIX`
-- `MRMOSS_PLINK_BIN`
-- `MRMOSS_OVERWRITE_FORMAT` (`true/false`)
-- `MRMOSS_INCLUDE_OTHER_METHODS` (`true/false`, default `false`)
+- `quickstart_groundcoffee_negctrl.txt`
+- `quickstart_groundcoffee_negctrl_R_matrix.tsv`
+- `format_summary.tsv`
 
-### Option B: direct function calls
+## 4. Full manuscript profiles (optional)
 
-```r
-manifest <- system.file("config/raw_data_manifest.csv", package = "MRMOSS")
-traits <- c("Ground_coffee_consumption", "Emotional_neglect", "Physical_abuse", "Sexual_abuse")
+These require additional data roots referenced in `inst/config/raw_data_manifest.csv`:
 
-mrmoss_batch_format_manifest(
-  manifest_csv = manifest,
-  output_dir = "data/formatted_summary_data_quickstart",
-  traits = traits,
-  overwrite = FALSE,
-  verbose = TRUE
-)
+- `MVP_SUMMARYDATA`
+- `UKB_SUMMARYDATA`
+- `GWAS_CATALOG_SUMMARYDATA`
+- `MRMOSS_INTERNAL_DATA`
 
-mrmoss_run_analysis(
-  exposures = "Ground_coffee_consumption",
-  outcomes = c("Emotional_neglect", "Physical_abuse", "Sexual_abuse"),
-  formatted_dir = "data/formatted_summary_data_quickstart",
-  reference_prefix = "/path/to/reference/EUR",
-  output_dir = "results/quickstart_minimal",
-  output_prefix = "quickstart_groundcoffee_negctrl",
-  iv_thresholds = c(5e-7),
-  rd = 1.2,
-  include_other_methods = FALSE,
-  verbose = TRUE
-)
-```
-
-## 4. Full Manuscript Profiles (Optional)
-
-Profile wrappers are still available:
+Run profile scripts:
 
 ```bash
 Rscript inst/scripts/01_format_raw_data.R
@@ -110,27 +96,20 @@ Generic runner:
 Rscript inst/scripts/run_profile.R amd_application
 ```
 
-By default, script wrappers set `include_other_methods = FALSE` to avoid extra package requirements.
-Enable comparisons (IVW/RAPS/Egger/MRMix) with:
+By default, wrapper scripts set `include_other_methods = FALSE`.
+Enable IVW/RAPS/Egger/MRMix with:
 
 ```bash
 export MRMOSS_INCLUDE_OTHER_METHODS=true
 ```
 
-## 5. Outputs
+## 5. Core files
 
-Each run writes:
+- Main C++ implementation: `src/MRMOSS_PX.cpp`
+- Data manifest: `inst/config/raw_data_manifest.csv`
+- Quickstart script: `inst/scripts/00_quickstart_raw_to_result.R`
+- Main analysis API: `mrmoss_run_analysis()`
 
-- `<prefix>.txt`: MR-MOSS estimates and p-values
-- `<prefix>_othermethods.txt`: optional comparison methods (only when enabled)
-- `<prefix>_R_matrix.tsv`: estimated outcome correlation matrix
+## 6. Troubleshooting
 
-Quickstart also writes `format_summary.tsv` in the output directory.
-
-## 6. Notes
-
-- Core C++ implementation: `src/MRMOSS_PX.cpp`
-- Manifest: `inst/config/raw_data_manifest.csv`
-- Raw-to-formatted scripts: `inst/scripts/`
-
-If installation fails in a conda environment due to C/C++ wrapper mismatch, set `R_MAKEVARS_USER` to use system `gcc/g++` and reinstall.
+If compilation fails in conda environments (for example `x86_64-conda-linux-gnu-c++: not found`), set `R_MAKEVARS_USER` to point to a Makevars file that uses system `gcc/g++`, then reinstall.

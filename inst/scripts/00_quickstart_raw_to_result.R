@@ -1,5 +1,15 @@
 #!/usr/bin/env Rscript
 
+if (!requireNamespace("MRMOSS", quietly = TRUE)) {
+  stop(
+    paste(
+      "Package 'MRMOSS' is not installed.",
+      "Install first with remotes::install_github('YunlongCao/MR_MOSS')",
+      "or run `R CMD INSTALL .` from a local clone."
+    ),
+    call. = FALSE
+  )
+}
 suppressPackageStartupMessages(library(MRMOSS))
 
 as_flag <- function(x, default = FALSE) {
@@ -38,6 +48,26 @@ if (!nzchar(plink_bin)) {
 
 overwrite_format <- as_flag(Sys.getenv("MRMOSS_OVERWRITE_FORMAT", unset = ""), default = FALSE)
 include_other_methods <- as_flag(Sys.getenv("MRMOSS_INCLUDE_OTHER_METHODS", unset = ""), default = FALSE)
+
+internal_data_root <- Sys.getenv("MRMOSS_INTERNAL_DATA", unset = "")
+if (!nzchar(internal_data_root)) {
+  stop(
+    "MRMOSS_INTERNAL_DATA is not set. For quickstart, set it to the directory containing the raw files listed in the manifest.",
+    call. = FALSE
+  )
+}
+if (!dir.exists(internal_data_root)) {
+  stop(sprintf("MRMOSS_INTERNAL_DATA does not exist: %s", internal_data_root), call. = FALSE)
+}
+if (!file.exists(paste0(reference_prefix, ".bed"))) {
+  stop(
+    sprintf(
+      "Reference panel not found at %s.bed. Set MRMOSS_REFERENCE_PREFIX to your LD reference prefix.",
+      reference_prefix
+    ),
+    call. = FALSE
+  )
+}
 
 traits <- c(
   "Ground_coffee_consumption",

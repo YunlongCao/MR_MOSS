@@ -7,7 +7,8 @@
 mrmoss_run_analysis(
   exposures,
   outcomes,
-  formatted_dir,
+  formatted_dir = NULL,
+  formatted_data = NULL,
   reference_prefix = NULL,
   output_dir,
   output_prefix,
@@ -32,7 +33,12 @@ mrmoss_run_analysis(
 
 \item{outcomes}{Outcome trait names.}
 
-\item{formatted_dir}{Directory with formatted trait files.}
+\item{formatted_dir}{Directory with formatted trait files.
+Ignored when \code{formatted_data} is provided.}
+
+\item{formatted_data}{Optional named list of formatted trait data.frames or
+data.tables. Each element must contain columns \code{SNP}, \code{A1}, \code{A2}, \code{Z},
+\code{N}, \code{P}.}
 
 \item{reference_prefix}{Optional PLINK reference prefix (without
 \code{.bed/.bim/.fam}) for local clumping.

@@ -5,17 +5,14 @@ if (!requireNamespace("MRMOSS", quietly = TRUE)) {
 }
 suppressPackageStartupMessages(library(MRMOSS))
 
-formatted_dir <- system.file("extdata", "formatted_example", package = "MRMOSS")
-if (!nzchar(formatted_dir)) {
-  stop("Cannot find packaged example formatted data.", call. = FALSE)
-}
+example_data <- mrmoss_example_formatted_data()
 
 exposures <- "Smoking_initiation"
 outcomes <- c("AMD", "AMD_dry", "AMD_wet")
 
 reference_prefix <- Sys.getenv("MRMOSS_REFERENCE_PREFIX", unset = "")
 if (!nzchar(reference_prefix)) {
-  reference_prefix <- file.path(formatted_dir, "EUR_example")
+  reference_prefix <- mrmoss_example_reference()
 }
 if (toupper(reference_prefix) == "ONLINE") {
   reference_prefix <- NULL
@@ -29,7 +26,6 @@ pop <- Sys.getenv("MRMOSS_POP", unset = "EUR")
 output_dir <- Sys.getenv("MRMOSS_OUTPUT_DIR", unset = file.path(getwd(), "results", "smoking_amd_example"))
 dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
 
-cat("Formatted dir:", formatted_dir, "\n")
 cat("Exposure:", exposures, "\n")
 cat("Outcomes:", paste(outcomes, collapse = ", "), "\n")
 cat("Output dir:", output_dir, "\n")
@@ -45,19 +41,10 @@ if (is.null(reference_prefix)) {
   }
 }
 
-check_tab <- mrmoss_check_formatted_inputs(
-  formatted_dir = formatted_dir,
-  traits = c(exposures, outcomes)
-)
-print(check_tab)
-if (any(check_tab$status != "ok")) {
-  stop("Packaged example files failed input checks.", call. = FALSE)
-}
-
 res <- mrmoss_run_analysis(
   exposures = exposures,
   outcomes = outcomes,
-  formatted_dir = formatted_dir,
+  formatted_data = example_data,
   reference_prefix = reference_prefix,
   output_dir = output_dir,
   output_prefix = "smoking_to_amd",

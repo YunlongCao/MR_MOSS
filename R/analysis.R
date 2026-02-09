@@ -88,11 +88,42 @@ mrmoss_prepare_outcome_specific_mrdat <- function(exposure_dat,
   )
 }
 
+mrmoss_standardize_formatted_trait <- function(dt, trait_name = NULL) {
+  dt <- data.table::as.data.table(dt)
+  needed <- c("SNP", "A1", "A2", "Z", "N", "P")
+  miss <- setdiff(needed, colnames(dt))
+  if (length(miss) > 0) {
+    who <- if (!is.null(trait_name) && nzchar(trait_name)) sprintf(" '%s'", trait_name) else ""
+    stop(sprintf("Formatted trait%s is missing columns: %s", who, paste(miss, collapse = ", ")), call. = FALSE)
+  }
+
+  out <- data.table::data.table(
+    SNP = as.character(dt$SNP),
+    A1 = toupper(as.character(dt$A1)),
+    A2 = toupper(as.character(dt$A2)),
+    Z = as.numeric(dt$Z),
+    N = as.numeric(dt$N),
+    P = as.numeric(dt$P)
+  )
+
+  keep <- !is.na(out$SNP) & !is.na(out$A1) & !is.na(out$A2) &
+    is.finite(out$Z) & is.finite(out$N) & is.finite(out$P) &
+    out$N > 0 &
+    out$A1 %in% c("A", "C", "G", "T") &
+    out$A2 %in% c("A", "C", "G", "T")
+  out <- out[keep, ]
+  out
+}
+
 #' Run MR-MOSS Real-Data Analysis
 #'
 #' @param exposures Exposure trait names.
 #' @param outcomes Outcome trait names.
 #' @param formatted_dir Directory with formatted trait files.
+#'   Ignored when `formatted_data` is provided.
+#' @param formatted_data Optional named list of formatted trait data.frames or
+#'   data.tables. Each element must contain columns `SNP`, `A1`, `A2`, `Z`,
+#'   `N`, `P`.
 #' @param reference_prefix Optional PLINK reference prefix (without
 #'   `.bed/.bim/.fam`) for local clumping.
 #'   If `NULL`, LD clumping uses the online OpenGWAS service via `ieugwasr`.
@@ -115,7 +146,8 @@ mrmoss_prepare_outcome_specific_mrdat <- function(exposure_dat,
 #' @return List with MR-MOSS table, other-method table, and output paths.
 mrmoss_run_analysis <- function(exposures,
                                 outcomes,
-                                formatted_dir,
+                                formatted_dir = NULL,
+                                formatted_data = NULL,
                                 reference_prefix = NULL,
                                 output_dir,
                                 output_prefix,
@@ -133,6 +165,12 @@ mrmoss_run_analysis <- function(exposures,
                                 include_other_methods = TRUE,
                                 cache_dir = NULL,
                                 verbose = TRUE) {
+  exposures <- unique(as.character(exposures))
+  outcomes <- unique(as.character(outcomes))
+  if (length(exposures) == 0 || length(outcomes) == 0) {
+    stop("`exposures` and `outcomes` must each contain at least one trait name.", call. = FALSE)
+  }
+
   dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
   if (!is.null(cache_dir)) {
     dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
@@ -157,8 +195,38 @@ mrmoss_run_analysis <- function(exposures,
     }
   }
 
-  exposure_data <- mrmoss_load_formatted_traits(formatted_dir, exposures)
-  outcome_data <- mrmoss_load_formatted_traits(formatted_dir, outcomes)
+  if (!is.null(formatted_data)) {
+    if (!is.list(formatted_data) || is.null(names(formatted_data))) {
+      stop("`formatted_data` must be a named list.", call. = FALSE)
+    }
+
+    need_traits <- unique(c(exposures, outcomes))
+    missing_traits <- setdiff(need_traits, names(formatted_data))
+    if (length(missing_traits) > 0) {
+      stop(
+        sprintf(
+          "`formatted_data` is missing required traits: %s",
+          paste(missing_traits, collapse = ", ")
+        ),
+        call. = FALSE
+      )
+    }
+
+    trait_data <- lapply(need_traits, function(tr) {
+      mrmoss_standardize_formatted_trait(formatted_data[[tr]], trait_name = tr)
+    })
+    names(trait_data) <- need_traits
+
+    exposure_data <- trait_data[exposures]
+    outcome_data <- trait_data[outcomes]
+    mrmoss_message(verbose, sprintf("[input] using in-memory formatted_data for %d traits", length(need_traits)))
+  } else {
+    if (is.null(formatted_dir) || !nzchar(as.character(formatted_dir)[1])) {
+      stop("Provide either `formatted_dir` or `formatted_data`.", call. = FALSE)
+    }
+    exposure_data <- mrmoss_load_formatted_traits(formatted_dir, exposures)
+    outcome_data <- mrmoss_load_formatted_traits(formatted_dir, outcomes)
+  }
 
   R <- as.matrix(mrmoss_estimate_outcome_correlation(
     outcome_data,

@@ -115,6 +115,315 @@ mrmoss_standardize_formatted_trait <- function(dt, trait_name = NULL) {
   out
 }
 
+#' Build MR-MOSS Input from Formatted Data
+#'
+#' Builds the clumped and harmonized MR-MOSS input for one exposure and
+#' multiple outcomes.
+#'
+#' @param exposure Exposure trait name.
+#' @param outcomes Outcome trait names.
+#' @param formatted_dir Directory with formatted trait files. Ignored when
+#'   `formatted_data` is provided.
+#' @param formatted_data Optional named list of formatted trait data.frames or
+#'   data.tables. Each element must contain `SNP`, `A1`, `A2`, `Z`, `N`, `P`.
+#' @param iv_threshold Instrument p-value threshold for clumping.
+#' @param reference_prefix Optional PLINK reference prefix for local clumping.
+#'   If `NULL`, online OpenGWAS clumping is used via `ieugwasr`.
+#' @param plink_bin Optional PLINK binary path for local clumping.
+#' @param pop Population code for clumping.
+#' @param clump_kb LD window size.
+#' @param clump_r2 LD r2 threshold.
+#' @param clump_p Secondary clumping p-value threshold.
+#' @param f_min Minimum F statistic for instruments.
+#' @param p_null_threshold Threshold for null SNPs in outcome-correlation estimation.
+#' @param n2 Optional outcome sample size. Default is mean outcome N.
+#' @param cache_dir Optional cache directory to save per-outcome clumped inputs.
+#' @param verbose Whether to print progress.
+#' @return A list containing `gamma_hat`, `Gamma_hat`, `R`, and metadata.
+#' @export
+mrmoss_input <- function(exposure,
+                         outcomes,
+                         formatted_dir = NULL,
+                         formatted_data = NULL,
+                         iv_threshold = 5e-7,
+                         reference_prefix = NULL,
+                         plink_bin = NULL,
+                         pop = "EUR",
+                         clump_kb = 1000,
+                         clump_r2 = 0.001,
+                         clump_p = 0.999,
+                         f_min = 10,
+                         p_null_threshold = 1e-5,
+                         n2 = NULL,
+                         cache_dir = NULL,
+                         verbose = TRUE) {
+  exposure <- as.character(exposure)[1]
+  outcomes <- unique(as.character(outcomes))
+  if (!nzchar(exposure) || length(outcomes) == 0) {
+    stop("`exposure` must be one trait name and `outcomes` must be non-empty.", call. = FALSE)
+  }
+
+  if (!is.null(cache_dir)) {
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+  }
+
+  if (!is.null(reference_prefix) && nzchar(reference_prefix)) {
+    reference_prefix <- mrmoss_resolve_path(reference_prefix)
+    if (!file.exists(paste0(reference_prefix, ".bed"))) {
+      stop(sprintf("Reference bed file not found: %s.bed", reference_prefix), call. = FALSE)
+    }
+    plink_bin <- mrmoss_get_plink_binary(plink_bin)
+    mrmoss_message(verbose, sprintf("[clump] local reference: %s", reference_prefix))
+  } else {
+    reference_prefix <- NULL
+    plink_bin <- NULL
+    mrmoss_message(verbose, sprintf("[clump] online OpenGWAS service (pop = %s)", pop))
+    if (!nzchar(Sys.getenv("OPENGWAS_JWT", unset = ""))) {
+      mrmoss_message(
+        verbose,
+        "[clump] OPENGWAS_JWT is not set. If online clumping fails with 401, set OPENGWAS_JWT or use local reference_prefix."
+      )
+    }
+  }
+
+  if (!is.null(formatted_data)) {
+    if (!is.list(formatted_data) || is.null(names(formatted_data))) {
+      stop("`formatted_data` must be a named list.", call. = FALSE)
+    }
+
+    need_traits <- unique(c(exposure, outcomes))
+    missing_traits <- setdiff(need_traits, names(formatted_data))
+    if (length(missing_traits) > 0) {
+      stop(
+        sprintf("`formatted_data` is missing required traits: %s", paste(missing_traits, collapse = ", ")),
+        call. = FALSE
+      )
+    }
+
+    trait_data <- lapply(need_traits, function(tr) {
+      mrmoss_standardize_formatted_trait(formatted_data[[tr]], trait_name = tr)
+    })
+    names(trait_data) <- need_traits
+
+    exp_dat <- trait_data[[exposure]]
+    outcome_data <- trait_data[outcomes]
+    mrmoss_message(verbose, sprintf("[input] using in-memory formatted_data for %d traits", length(need_traits)))
+  } else {
+    if (is.null(formatted_dir) || !nzchar(as.character(formatted_dir)[1])) {
+      stop("Provide either `formatted_dir` or `formatted_data`.", call. = FALSE)
+    }
+    exp_dat <- mrmoss_load_formatted_traits(formatted_dir, exposure)[[1]]
+    outcome_data <- mrmoss_load_formatted_traits(formatted_dir, outcomes)
+  }
+
+  R <- as.matrix(mrmoss_estimate_outcome_correlation(
+    outcome_data,
+    p_null_threshold = p_null_threshold
+  ))
+  storage.mode(R) <- "double"
+  if (nrow(R) != length(outcomes) || ncol(R) != length(outcomes)) {
+    stop(
+      sprintf(
+        "Outcome correlation matrix dimension mismatch: expected %dx%d, got %dx%d.",
+        length(outcomes), length(outcomes), nrow(R), ncol(R)
+      ),
+      call. = FALSE
+    )
+  }
+  rownames(R) <- outcomes
+  colnames(R) <- outcomes
+
+  if (is.null(n2)) {
+    n2 <- floor(mean(vapply(outcome_data, function(x) x$N[1], numeric(1)), na.rm = TRUE))
+  }
+
+  n1 <- as.integer(round(exp_dat$N[1]))
+  mrdat_list <- vector("list", length(outcomes))
+  names(mrdat_list) <- outcomes
+
+  for (outcome in outcomes) {
+    out_dat <- outcome_data[[outcome]]
+    mrdat <- mrmoss_prepare_outcome_specific_mrdat(
+      exposure_dat = exp_dat,
+      outcome_dat = out_dat,
+      iv_threshold = iv_threshold,
+      reference_prefix = reference_prefix,
+      plink_bin = plink_bin,
+      pop = pop,
+      clump_kb = clump_kb,
+      clump_r2 = clump_r2,
+      clump_p = clump_p,
+      f_min = f_min
+    )
+    mrdat_list[[outcome]] <- mrdat
+
+    if (!is.null(cache_dir)) {
+      cache_file <- file.path(
+        cache_dir,
+        paste0("MRdat_", exposure, "_", outcome, "_", format(iv_threshold, scientific = TRUE), ".rds")
+      )
+      saveRDS(mrdat, cache_file)
+    }
+  }
+
+  zero_outcomes <- names(mrdat_list)[vapply(mrdat_list, nrow, integer(1)) == 0]
+  if (length(zero_outcomes) > 0) {
+    stop(
+      sprintf(
+        "At least one outcome has zero instruments after clumping: %s",
+        paste(zero_outcomes, collapse = ", ")
+      ),
+      call. = FALSE
+    )
+  }
+
+  common_snps <- Reduce(intersect, lapply(mrdat_list, function(x) x$SNP))
+  if (length(common_snps) < 3) {
+    stop(sprintf("Too few shared instruments after clumping: %d", length(common_snps)), call. = FALSE)
+  }
+  common_snps <- as.character(common_snps)
+
+  exp_idx <- match(common_snps, as.character(mrdat_list[[1]]$SNP))
+  if (anyNA(exp_idx)) {
+    stop("Internal error: exposure SNP alignment failed after intersection.", call. = FALSE)
+  }
+  b_exp <- as.numeric(mrdat_list[[1]]$b.exp[exp_idx])
+
+  b_out <- vapply(
+    mrdat_list,
+    FUN = function(dt) {
+      out_idx <- match(common_snps, as.character(dt$SNP))
+      if (anyNA(out_idx)) {
+        stop("Internal error: outcome SNP alignment failed after intersection.", call. = FALSE)
+      }
+      as.numeric(dt$b.out[out_idx])
+    },
+    FUN.VALUE = numeric(length(common_snps))
+  )
+  b_out <- as.matrix(b_out)
+  storage.mode(b_out) <- "double"
+
+  out <- list(
+    exposure = exposure,
+    outcomes = outcomes,
+    iv_threshold = iv_threshold,
+    NO_of_IVs = length(common_snps),
+    common_snps = common_snps,
+    n1 = as.integer(round(n1)),
+    n2 = as.integer(round(n2)),
+    gamma_hat = b_exp,
+    Gamma_hat = b_out,
+    R = R
+  )
+  class(out) <- "mrmoss_input"
+  out
+}
+
+#' Run Core MR-MOSS Model on Prepared Input
+#'
+#' @param exposure Exposure trait name.
+#' @param outcomes Outcome trait names.
+#' @param mrmoss_input Prepared input object from `mrmoss_input()`.
+#' @param pvalue_output One of `"both"`, `"outcome"`, `"global"`.
+#' @param rd Multiplicative scale factor for residual SD update.
+#' @param maxiter Maximum PX-EM iterations.
+#' @param output_dir Optional output directory.
+#' @param output_prefix Output basename when writing files.
+#' @param verbose Whether to print progress.
+#' @return A list with result table, raw fit object, and optional output files.
+#' @export
+mrmoss <- function(exposure,
+                   outcomes,
+                   mrmoss_input,
+                   pvalue_output = c("both", "outcome", "global"),
+                   rd = 1.2,
+                   maxiter = 1000000,
+                   output_dir = NULL,
+                   output_prefix = "mrmoss_result",
+                   verbose = TRUE) {
+  pvalue_output <- match.arg(pvalue_output)
+  exposure <- as.character(exposure)[1]
+  outcomes <- as.character(outcomes)
+
+  if (!is.list(mrmoss_input)) {
+    stop("`mrmoss_input` must be a list created by `mrmoss_input()`.", call. = FALSE)
+  }
+  required <- c("exposure", "outcomes", "gamma_hat", "Gamma_hat", "R", "n1", "n2", "NO_of_IVs")
+  miss <- setdiff(required, names(mrmoss_input))
+  if (length(miss) > 0) {
+    stop(sprintf("`mrmoss_input` is missing fields: %s", paste(miss, collapse = ", ")), call. = FALSE)
+  }
+  if (!identical(exposure, as.character(mrmoss_input$exposure))) {
+    stop(sprintf("Exposure mismatch: '%s' vs input '%s'.", exposure, as.character(mrmoss_input$exposure)), call. = FALSE)
+  }
+
+  input_outcomes <- as.character(mrmoss_input$outcomes)
+  out_idx <- match(outcomes, input_outcomes)
+  if (length(outcomes) == 0 || anyNA(out_idx)) {
+    stop("`outcomes` must be a non-empty subset in the same naming space as `mrmoss_input$outcomes`.", call. = FALSE)
+  }
+
+  gamma_hat <- as.numeric(mrmoss_input$gamma_hat)
+  Gamma_hat <- as.matrix(mrmoss_input$Gamma_hat)[, out_idx, drop = FALSE]
+  R <- as.matrix(mrmoss_input$R)[out_idx, out_idx, drop = FALSE]
+  n1 <- as.integer(round(mrmoss_input$n1))
+  n2 <- as.integer(round(mrmoss_input$n2))
+
+  m <- length(outcomes)
+  theta <- c(rep(0, m), 0.001, rep(0.001, m), 1, rep(0.8, m))
+  test <- as.integer(seq_len(m))
+
+  fit <- MRMOSS_PX_cpp(
+    gamma_hat = gamma_hat,
+    Gamma_hat = Gamma_hat,
+    R = R,
+    n1 = n1,
+    n2 = n2,
+    theta0 = theta,
+    test = test,
+    maxiter = as.integer(maxiter),
+    rd = rd
+  )
+
+  row <- data.table::data.table(
+    exposure = exposure,
+    IV_Threshold = as.numeric(mrmoss_input$iv_threshold),
+    NO_of_IVs = as.integer(mrmoss_input$NO_of_IVs),
+    iteration = as.integer(fit$iteration),
+    rd = rd
+  )
+  if (pvalue_output %in% c("both", "global")) {
+    row$Overall_pvalue <- as.numeric(fit$pvalue_overall)
+  }
+
+  for (k in seq_along(outcomes)) {
+    row[[paste0("outcome.", k)]] <- outcomes[k]
+    row[[paste0("MOSS_estimates.", k)]] <- as.numeric(fit$beta[k])
+    if (pvalue_output %in% c("both", "outcome")) {
+      row[[paste0("pvalue.", k)]] <- as.numeric(fit$pvalue[k])
+    }
+  }
+
+  files <- list(mrmoss = NULL, correlation = NULL)
+  if (!is.null(output_dir)) {
+    dir.create(output_dir, recursive = TRUE, showWarnings = FALSE)
+    out_file <- file.path(output_dir, paste0(output_prefix, ".txt"))
+    r_file <- file.path(output_dir, paste0(output_prefix, "_R_matrix.tsv"))
+    data.table::fwrite(row, out_file, sep = "\t")
+    data.table::fwrite(data.table::as.data.table(R, keep.rownames = "outcome"), r_file, sep = "\t")
+    files$mrmoss <- out_file
+    files$correlation <- r_file
+    mrmoss_message(verbose, sprintf("[output] wrote %s", out_file))
+  }
+
+  list(
+    result = row,
+    fit = fit,
+    pvalue_output = pvalue_output,
+    files = files
+  )
+}
+
 #' Run MR-MOSS Real-Data Analysis
 #'
 #' @param exposures Exposure trait names.

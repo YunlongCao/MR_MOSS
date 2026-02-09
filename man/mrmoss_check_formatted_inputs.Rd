@@ -21,5 +21,5 @@ mrmoss_check_formatted_inputs(
 A data.table summarizing input-file readiness.
 }
 \description{
-Check formatted GWAS input files.
+Check Formatted GWAS Input Files
 }

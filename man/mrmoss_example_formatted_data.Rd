@@ -11,9 +11,8 @@ Named list of formatted trait data.tables.
 }
 \description{
 Loads the packaged real-data example used in the README:
-
-\itemize{
-\item exposure: \code{Smoking_initiation}
-\item outcomes: \code{AMD}, \code{AMD_dry}, \code{AMD_wet}
 }
+\details{
+- exposure: `Smoking_initiation`
+- outcomes: `AMD`, `AMD_dry`, `AMD_wet`
 }

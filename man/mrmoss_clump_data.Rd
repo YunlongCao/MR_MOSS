@@ -22,7 +22,7 @@ mrmoss_clump_data(
 \item{iv_threshold}{IV p-value threshold on exposure.}
 
 \item{reference_prefix}{Prefix to PLINK reference panel (e.g. "/path/EUR").
-If \code{NULL}, use the online OpenGWAS clumping service via \code{ieugwasr}.}
+If `NULL`, use the online OpenGWAS clumping service via `ieugwasr`.}
 
 \item{plink_bin}{Path to PLINK binary for local clumping.}
 

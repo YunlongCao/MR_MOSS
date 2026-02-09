@@ -34,15 +34,15 @@ mrmoss_run_analysis(
 \item{outcomes}{Outcome trait names.}
 
 \item{formatted_dir}{Directory with formatted trait files.
-Ignored when \code{formatted_data} is provided.}
+Ignored when `formatted_data` is provided.}
 
 \item{formatted_data}{Optional named list of formatted trait data.frames or
-data.tables. Each element must contain columns \code{SNP}, \code{A1}, \code{A2}, \code{Z},
-\code{N}, \code{P}.}
+data.tables. Each element must contain columns `SNP`, `A1`, `A2`, `Z`,
+`N`, `P`.}
 
 \item{reference_prefix}{Optional PLINK reference prefix (without
-\code{.bed/.bim/.fam}) for local clumping.
-If \code{NULL}, LD clumping uses the online OpenGWAS service via \code{ieugwasr}.}
+`.bed/.bim/.fam`) for local clumping.
+If `NULL`, LD clumping uses the online OpenGWAS service via `ieugwasr`.}
 
 \item{output_dir}{Output directory.}
 

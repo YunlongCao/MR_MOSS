@@ -12,6 +12,17 @@ remotes::install_github("YunlongCao/MR_MOSS")
 library(MRMOSS)
 ```
 
+If `install_github()` hits GitHub API limit (`HTTP 403 rate limit exceeded`), use:
+
+```bash
+git clone https://github.com/YunlongCao/MR_MOSS.git
+```
+
+```r
+remotes::install_local("MR_MOSS")
+library(MRMOSS)
+```
+
 ## Formatted Input Requirements
 
 `mrmoss_run_analysis()` expects one file per trait under `formatted_dir`.
@@ -98,13 +109,13 @@ Run directly in R:
 
 ```r
 example_dir <- system.file("extdata", "formatted_example", package = "MRMOSS")
+example_ref <- file.path(example_dir, "EUR_example")  # bundled small reference
 
 res <- mrmoss_run_analysis(
   exposures = "Smoking_initiation",
   outcomes = c("AMD", "AMD_dry", "AMD_wet"),
   formatted_dir = example_dir,
-  reference_prefix = NULL,  # set to "/path/to/EUR" for local clumping
-  pop = "EUR",
+  reference_prefix = example_ref,
   output_dir = "results/smoking_amd_example",
   output_prefix = "smoking_to_amd",
   iv_thresholds = c(5e-7),
@@ -114,6 +125,27 @@ res <- mrmoss_run_analysis(
 )
 
 res$files
+```
+
+The bundled `EUR_example` reference is only for this example run, not for full-scale analyses.
+
+To force online clumping for the example:
+
+```r
+Sys.setenv(OPENGWAS_JWT = "<your_token>")
+res_online <- mrmoss_run_analysis(
+  exposures = "Smoking_initiation",
+  outcomes = c("AMD", "AMD_dry", "AMD_wet"),
+  formatted_dir = example_dir,
+  reference_prefix = NULL,
+  pop = "EUR",
+  output_dir = "results/smoking_amd_online",
+  output_prefix = "smoking_to_amd_online",
+  iv_thresholds = c(5e-7),
+  rd = 1.2,
+  include_other_methods = FALSE,
+  verbose = TRUE
+)
 ```
 
 ## Script Entry Points
@@ -134,6 +166,9 @@ Real-data example runner:
 ```bash
 Rscript inst/scripts/10_run_smoking_amd_example.R
 ```
+
+`inst/scripts/10_run_smoking_amd_example.R` uses bundled `EUR_example` by default.
+Set `MRMOSS_REFERENCE_PREFIX=ONLINE` to use online clumping instead.
 
 ## Reference Files (`EUR.bed/.bim/.fam`)
 

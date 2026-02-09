@@ -15,6 +15,9 @@ outcomes <- c("AMD", "AMD_dry", "AMD_wet")
 
 reference_prefix <- Sys.getenv("MRMOSS_REFERENCE_PREFIX", unset = "")
 if (!nzchar(reference_prefix)) {
+  reference_prefix <- file.path(formatted_dir, "EUR_example")
+}
+if (toupper(reference_prefix) == "ONLINE") {
   reference_prefix <- NULL
 }
 plink_bin <- Sys.getenv("MRMOSS_PLINK_BIN", unset = "")
@@ -37,6 +40,9 @@ if (is.null(reference_prefix)) {
   }
 } else {
   cat("Clumping mode: local PLINK reference:", reference_prefix, "\n")
+  if (!file.exists(paste0(reference_prefix, ".bed"))) {
+    stop(sprintf("Reference file not found: %s.bed", reference_prefix), call. = FALSE)
+  }
 }
 
 check_tab <- mrmoss_check_formatted_inputs(

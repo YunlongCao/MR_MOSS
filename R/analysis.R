@@ -93,13 +93,15 @@ mrmoss_prepare_outcome_specific_mrdat <- function(exposure_dat,
 #' @param exposures Exposure trait names.
 #' @param outcomes Outcome trait names.
 #' @param formatted_dir Directory with formatted trait files.
-#' @param reference_prefix PLINK reference prefix (without .bed/.bim/.fam).
+#' @param reference_prefix Optional PLINK reference prefix (without
+#'   `.bed/.bim/.fam`) for local clumping.
+#'   If `NULL`, LD clumping uses the online OpenGWAS service via `ieugwasr`.
 #' @param output_dir Output directory.
 #' @param output_prefix Output basename (without extension).
 #' @param iv_thresholds Instrument p-value thresholds.
 #' @param rd Multiplicative scale factor for residual SD update.
 #' @param n2 Optional outcome sample size. Default is mean outcome N.
-#' @param plink_bin Optional PLINK binary path.
+#' @param plink_bin Optional PLINK binary path for local clumping.
 #' @param pop Population code.
 #' @param clump_kb LD window size.
 #' @param clump_r2 LD r2 threshold.
@@ -114,7 +116,7 @@ mrmoss_prepare_outcome_specific_mrdat <- function(exposure_dat,
 mrmoss_run_analysis <- function(exposures,
                                 outcomes,
                                 formatted_dir,
-                                reference_prefix,
+                                reference_prefix = NULL,
                                 output_dir,
                                 output_prefix,
                                 iv_thresholds = c(5e-07, 5e-08),
@@ -136,12 +138,24 @@ mrmoss_run_analysis <- function(exposures,
     dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
   }
 
-  reference_prefix <- mrmoss_resolve_path(reference_prefix)
-  if (!file.exists(paste0(reference_prefix, ".bed"))) {
-    stop(sprintf("Reference bed file not found: %s.bed", reference_prefix), call. = FALSE)
+  if (!is.null(reference_prefix) && nzchar(reference_prefix)) {
+    reference_prefix <- mrmoss_resolve_path(reference_prefix)
+    if (!file.exists(paste0(reference_prefix, ".bed"))) {
+      stop(sprintf("Reference bed file not found: %s.bed", reference_prefix), call. = FALSE)
+    }
+    plink_bin <- mrmoss_get_plink_binary(plink_bin)
+    mrmoss_message(verbose, sprintf("[clump] local reference: %s", reference_prefix))
+  } else {
+    reference_prefix <- NULL
+    plink_bin <- NULL
+    mrmoss_message(verbose, sprintf("[clump] online OpenGWAS service (pop = %s)", pop))
+    if (!nzchar(Sys.getenv("OPENGWAS_JWT", unset = ""))) {
+      mrmoss_message(
+        verbose,
+        "[clump] OPENGWAS_JWT is not set. If online clumping fails with 401, set OPENGWAS_JWT or use local reference_prefix."
+      )
+    }
   }
-
-  plink_bin <- mrmoss_get_plink_binary(plink_bin)
 
   exposure_data <- mrmoss_load_formatted_traits(formatted_dir, exposures)
   outcome_data <- mrmoss_load_formatted_traits(formatted_dir, outcomes)
@@ -360,7 +374,7 @@ mrmoss_run_analysis <- function(exposures,
 #'
 #' @param profile Profile name in `mrmoss_profiles()`.
 #' @param formatted_dir Directory with formatted trait files.
-#' @param reference_prefix PLINK reference prefix.
+#' @param reference_prefix Optional PLINK reference prefix for local clumping.
 #' @param output_dir Output directory for this profile.
 #' @param manifest_csv Optional manifest to auto-format missing traits before running.
 #' @param root_dir Optional root directory for relative paths in manifest.
@@ -369,7 +383,7 @@ mrmoss_run_analysis <- function(exposures,
 #' @return Result from `mrmoss_run_analysis`.
 mrmoss_run_profile <- function(profile,
                                formatted_dir,
-                               reference_prefix,
+                               reference_prefix = NULL,
                                output_dir,
                                manifest_csv = NULL,
                                root_dir = NULL,

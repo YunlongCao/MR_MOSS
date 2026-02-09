@@ -8,7 +8,7 @@ mrmoss_run_analysis(
   exposures,
   outcomes,
   formatted_dir,
-  reference_prefix,
+  reference_prefix = NULL,
   output_dir,
   output_prefix,
   iv_thresholds = c(5e-07, 5e-08),
@@ -34,7 +34,9 @@ mrmoss_run_analysis(
 
 \item{formatted_dir}{Directory with formatted trait files.}
 
-\item{reference_prefix}{PLINK reference prefix (without .bed/.bim/.fam).}
+\item{reference_prefix}{Optional PLINK reference prefix (without
+\code{.bed/.bim/.fam}) for local clumping.
+If \code{NULL}, LD clumping uses the online OpenGWAS service via \code{ieugwasr}.}
 
 \item{output_dir}{Output directory.}
 
@@ -46,7 +48,7 @@ mrmoss_run_analysis(
 
 \item{n2}{Optional outcome sample size. Default is mean outcome N.}
 
-\item{plink_bin}{Optional PLINK binary path.}
+\item{plink_bin}{Optional PLINK binary path for local clumping.}
 
 \item{pop}{Population code.}
 

@@ -7,7 +7,7 @@
 mrmoss_run_profile(
   profile,
   formatted_dir,
-  reference_prefix,
+  reference_prefix = NULL,
   output_dir,
   manifest_csv = NULL,
   root_dir = NULL,
@@ -20,7 +20,7 @@ mrmoss_run_profile(
 
 \item{formatted_dir}{Directory with formatted trait files.}
 
-\item{reference_prefix}{PLINK reference prefix.}
+\item{reference_prefix}{Optional PLINK reference prefix for local clumping.}
 
 \item{output_dir}{Output directory for this profile.}
 

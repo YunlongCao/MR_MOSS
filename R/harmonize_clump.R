@@ -67,7 +67,8 @@ mrmoss_harmonize_data <- function(dat1, dat2) {
 #' @param dat Harmonized data from `mrmoss_harmonize_data`.
 #' @param iv_threshold IV p-value threshold on exposure.
 #' @param reference_prefix Prefix to PLINK reference panel (e.g. "/path/EUR").
-#' @param plink_bin Path to PLINK binary.
+#'   If `NULL`, use the online OpenGWAS clumping service via `ieugwasr`.
+#' @param plink_bin Path to PLINK binary for local clumping.
 #' @param pop Population code for ieugwasr (default "EUR").
 #' @param clump_kb Clumping window in kb.
 #' @param clump_r2 Clumping r2 threshold.
@@ -76,7 +77,7 @@ mrmoss_harmonize_data <- function(dat1, dat2) {
 #' @return Clumped MR dataset.
 mrmoss_clump_data <- function(dat,
                               iv_threshold,
-                              reference_prefix,
+                              reference_prefix = NULL,
                               plink_bin = NULL,
                               pop = "EUR",
                               clump_kb = 1000,
@@ -100,17 +101,46 @@ mrmoss_clump_data <- function(dat,
   dat$Fexp <- (dat$b.exp / dat$se.exp)^2
 
   clump_input <- data.frame(rsid = dat$SNP, pval = dat$pval.exp)
-  plink_bin <- mrmoss_get_plink_binary(plink_bin)
+  if (!is.null(reference_prefix) && nzchar(reference_prefix)) {
+    reference_prefix <- mrmoss_resolve_path(reference_prefix)
+    if (!file.exists(paste0(reference_prefix, ".bed"))) {
+      stop(
+        sprintf("Reference bed file not found for local clumping: %s.bed", reference_prefix),
+        call. = FALSE
+      )
+    }
 
-  clumped <- ieugwasr::ld_clump(
-    clump_input,
-    clump_kb = clump_kb,
-    clump_r2 = clump_r2,
-    clump_p = clump_p,
-    pop = pop,
-    bfile = reference_prefix,
-    plink_bin = plink_bin
-  )
+    plink_bin <- mrmoss_get_plink_binary(plink_bin)
+    clumped <- ieugwasr::ld_clump(
+      clump_input,
+      clump_kb = clump_kb,
+      clump_r2 = clump_r2,
+      clump_p = clump_p,
+      pop = pop,
+      bfile = reference_prefix,
+      plink_bin = plink_bin
+    )
+  } else {
+    clumped <- tryCatch(
+      ieugwasr::ld_clump(
+        clump_input,
+        clump_kb = clump_kb,
+        clump_r2 = clump_r2,
+        clump_p = clump_p,
+        pop = pop
+      ),
+      error = function(e) {
+        stop(
+          paste0(
+            "Online clumping via OpenGWAS failed. ",
+            "Set OPENGWAS_JWT for ieugwasr, or use local clumping with `reference_prefix`. ",
+            "Original error: ", conditionMessage(e)
+          ),
+          call. = FALSE
+        )
+      }
+    )
+  }
 
   out <- dat[dat$SNP %in% clumped$rsid, , drop = FALSE]
   out <- out[out$Fexp >= f_min, , drop = FALSE]

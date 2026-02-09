@@ -249,3 +249,63 @@ mrmoss_load_formatted_traits <- function(formatted_dir, traits) {
 
   out
 }
+
+#' Check Formatted GWAS Input Files
+#'
+#' @param formatted_dir Directory containing formatted trait files.
+#' @param traits Character vector of trait names.
+#' @param required_columns Required column names.
+#' @return A data.table summarizing input-file readiness.
+mrmoss_check_formatted_inputs <- function(formatted_dir,
+                                          traits,
+                                          required_columns = c("SNP", "A1", "A2", "Z", "N", "P")) {
+  traits <- unique(as.character(traits))
+  if (length(traits) == 0) {
+    stop("`traits` must contain at least one trait name.", call. = FALSE)
+  }
+
+  rows <- vector("list", length(traits))
+  for (i in seq_along(traits)) {
+    trait <- traits[[i]]
+    f <- file.path(formatted_dir, trait)
+    exists_file <- file.exists(f)
+
+    if (!exists_file) {
+      rows[[i]] <- data.table::data.table(
+        trait = trait,
+        file = f,
+        exists = FALSE,
+        n_snp = NA_integer_,
+        missing_columns = paste(required_columns, collapse = ","),
+        status = "missing_file"
+      )
+      next
+    }
+
+    hdr <- colnames(data.table::fread(f, nrows = 0, showProgress = FALSE))
+    missing_cols <- setdiff(required_columns, hdr)
+    if (length(missing_cols) > 0) {
+      rows[[i]] <- data.table::data.table(
+        trait = trait,
+        file = f,
+        exists = TRUE,
+        n_snp = NA_integer_,
+        missing_columns = paste(missing_cols, collapse = ","),
+        status = "missing_columns"
+      )
+      next
+    }
+
+    snp_col <- data.table::fread(f, select = "SNP", showProgress = FALSE)
+    rows[[i]] <- data.table::data.table(
+      trait = trait,
+      file = f,
+      exists = TRUE,
+      n_snp = nrow(snp_col),
+      missing_columns = "",
+      status = "ok"
+    )
+  }
+
+  data.table::rbindlist(rows, fill = TRUE)
+}

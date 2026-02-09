@@ -2,22 +2,7 @@
 
 MRMOSS is an R package for multi-outcome Mendelian randomization with summary statistics.
 
-This repository is organized so users can run:
-
-- raw summary statistics -> formatted files
-- formatted files -> final MR-MOSS result table
-
-## 1. Prerequisites
-
-- R >= 4.1
-- A working C/C++ toolchain for compiling `src/`
-- PLINK binary (or `plinkbinr`)
-
-If `Rscript` is not in PATH, activate your R environment first (for example your conda env).
-
-## 2. Install
-
-### Option A (recommended): install from GitHub
+## 1. Install
 
 ```r
 # install.packages("remotes")
@@ -25,62 +10,74 @@ remotes::install_github("YunlongCao/MR_MOSS")
 library(MRMOSS)
 ```
 
-### Option B: install from a local clone
+## 2. Fastest Reproducible Run (Recommended)
+
+This repository now includes a **self-contained demo quickstart** with:
+
+- 4 small raw GWAS-like files (`Ground_coffee_consumption`, `Emotional_neglect`, `Physical_abuse`, `Sexual_abuse`)
+- a tiny PLINK reference panel (`EUR.bed/.bim/.fam`)
+
+So a new user can run end-to-end without preparing external data.
+
+Run from a local clone:
 
 ```bash
-git clone git@github.com:YunlongCao/MR_MOSS.git
-cd MR_MOSS
-R CMD INSTALL .
+Rscript inst/scripts/00_quickstart_demo.R
 ```
 
-## 3. Quickstart (minimum end-to-end run)
+Default outputs:
 
-This is the easiest path to verify the pipeline from raw input to final MR-MOSS output.
+- `results/quickstart_demo/quickstart_demo_result.txt`
+- `results/quickstart_demo/quickstart_demo_result_R_matrix.tsv`
+- `results/quickstart_demo/format_summary.tsv`
 
-Quickstart uses:
+## 3. Download Demo Assets via `wget` (optional)
 
-- exposure: `Ground_coffee_consumption`
-- outcomes: `Emotional_neglect`, `Physical_abuse`, `Sexual_abuse`
-- IV threshold: `5e-7`
-
-### Required environment variables for quickstart
-
-Only two paths are required:
-
-- `MRMOSS_INTERNAL_DATA`: directory containing quickstart raw files
-- `MRMOSS_REFERENCE_PREFIX`: LD reference prefix (without `.bed/.bim/.fam`)
-
-Optional:
-
-- `MRMOSS_PLINK_BIN`: explicit path to PLINK executable
-- `MRMOSS_FORMATTED_DIR`, `MRMOSS_OUTPUT_DIR`: output locations
-
-### One-command quickstart (from repository root)
+If you only want the quickstart assets (without cloning the full repository):
 
 ```bash
-export MRMOSS_INTERNAL_DATA=/path/to/internal_data
-export MRMOSS_REFERENCE_PREFIX=/path/to/reference/EUR
-# optional: export MRMOSS_PLINK_BIN=/path/to/plink
+wget -O quickstart_demo_assets.zip \
+  https://raw.githubusercontent.com/YunlongCao/MR_MOSS/main/inst/extdata/quickstart_demo_assets.zip
 
+unzip -o quickstart_demo_assets.zip
+```
+
+Or use the helper script:
+
+```bash
+bash inst/scripts/download_quickstart_demo_assets.sh
+```
+
+## 4. Full Raw-Data Quickstart (manuscript-scale)
+
+Script:
+
+```bash
 Rscript inst/scripts/00_quickstart_raw_to_result.R
 ```
 
-Expected outputs (default under `results/quickstart_minimal`):
+This path uses the manuscript-style manifest and requires external raw data.
+Set at least:
 
-- `quickstart_groundcoffee_negctrl.txt`
-- `quickstart_groundcoffee_negctrl_R_matrix.tsv`
-- `format_summary.tsv`
+- `MRMOSS_INTERNAL_DATA` (directory containing required raw files)
+- `MRMOSS_REFERENCE_PREFIX` (LD reference prefix, without `.bed/.bim/.fam`)
 
-## 4. Full manuscript profiles (optional)
+Optional:
 
-These require additional data roots referenced in `inst/config/raw_data_manifest.csv`:
+- `MRMOSS_PLINK_BIN`
+- `MRMOSS_FORMATTED_DIR`, `MRMOSS_OUTPUT_DIR`
+- `MRMOSS_INCLUDE_OTHER_METHODS=true`
+
+## 5. Full Profile Scripts (optional)
+
+For full real-data profiles, also set data roots used in `inst/config/raw_data_manifest.csv`:
 
 - `MVP_SUMMARYDATA`
 - `UKB_SUMMARYDATA`
 - `GWAS_CATALOG_SUMMARYDATA`
 - `MRMOSS_INTERNAL_DATA`
 
-Run profile scripts:
+Then run:
 
 ```bash
 Rscript inst/scripts/01_format_raw_data.R
@@ -96,20 +93,18 @@ Generic runner:
 Rscript inst/scripts/run_profile.R amd_application
 ```
 
-By default, wrapper scripts set `include_other_methods = FALSE`.
-Enable IVW/RAPS/Egger/MRMix with:
-
-```bash
-export MRMOSS_INCLUDE_OTHER_METHODS=true
-```
-
-## 5. Core files
-
-- Main C++ implementation: `src/MRMOSS_PX.cpp`
-- Data manifest: `inst/config/raw_data_manifest.csv`
-- Quickstart script: `inst/scripts/00_quickstart_raw_to_result.R`
-- Main analysis API: `mrmoss_run_analysis()`
-
 ## 6. Troubleshooting
 
-If compilation fails in conda environments (for example `x86_64-conda-linux-gnu-c++: not found`), set `R_MAKEVARS_USER` to point to a Makevars file that uses system `gcc/g++`, then reinstall.
+- If quickstart script says package is missing: install `MRMOSS` first.
+- If clumping fails: set `MRMOSS_PLINK_BIN` to a valid PLINK executable path.
+- If no MR-MOSS row is produced, common causes are:
+  - too few shared IVs after clumping (needs at least 3)
+  - too few null SNPs for outcome-correlation estimation (needs at least 10)
+- In conda environments, if compiler wrapper is missing, set `R_MAKEVARS_USER` to use system `gcc/g++` and reinstall.
+
+## 7. Core Files
+
+- Main C++ implementation: `src/MRMOSS_PX.cpp`
+- Full manifest: `inst/config/raw_data_manifest.csv`
+- Demo manifest: `inst/extdata/quickstart_demo/manifest_quickstart_demo.csv`
+- Demo quickstart script: `inst/scripts/00_quickstart_demo.R`

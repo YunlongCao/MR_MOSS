@@ -330,15 +330,21 @@ mrmoss_run_analysis <- function(exposures,
   moss_tab <- if (length(moss_rows) > 0) data.table::rbindlist(moss_rows, fill = TRUE) else data.table::data.table()
   other_tab <- if (length(other_rows) > 0) data.table::rbindlist(other_rows, fill = TRUE) else data.table::data.table()
 
-  moss_file <- file.path(output_dir, paste0(output_prefix, ".txt"))
-  other_file <- file.path(output_dir, paste0(output_prefix, "_othermethods.txt"))
+  moss_file <- NULL
+  other_file <- NULL
   r_file <- file.path(output_dir, paste0(output_prefix, "_R_matrix.tsv"))
 
   if (nrow(moss_tab) > 0) {
+    moss_file <- file.path(output_dir, paste0(output_prefix, ".txt"))
     data.table::fwrite(moss_tab, moss_file, sep = "\t")
+  } else {
+    mrmoss_message(verbose, "No MR-MOSS rows were produced; returning mrmoss output path as NULL.")
   }
   if (nrow(other_tab) > 0) {
+    other_file <- file.path(output_dir, paste0(output_prefix, "_othermethods.txt"))
     data.table::fwrite(other_tab, other_file, sep = "\t")
+  } else if (isTRUE(include_other_methods)) {
+    mrmoss_message(verbose, "No comparison-method rows were produced; returning other_methods path as NULL.")
   }
   data.table::fwrite(data.table::as.data.table(R, keep.rownames = "outcome"), r_file, sep = "\t")
 

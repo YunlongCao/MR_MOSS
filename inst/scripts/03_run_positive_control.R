@@ -1,7 +1,6 @@
 #!/usr/bin/env Rscript
 
 suppressPackageStartupMessages(library(MRMOSS))
-Sys.setenv(MRMOSS_OUTPUT_DIR = Sys.getenv("MRMOSS_OUTPUT_DIR", unset = "results/positive_control"))
 
 project_root <- normalizePath(Sys.getenv("MRMOSS_PROJECT_ROOT", "."), winslash = "/", mustWork = FALSE)
 manifest <- Sys.getenv("MRMOSS_MANIFEST", unset = system.file("config/raw_data_manifest.csv", package = "MRMOSS"))

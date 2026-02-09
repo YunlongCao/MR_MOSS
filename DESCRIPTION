@@ -12,10 +12,10 @@ Encoding: UTF-8
 Depends: R (>= 4.1.0)
 Imports:
     data.table,
+    ieugwasr,
     Rcpp,
     stats
 Suggests:
-    ieugwasr,
     MRMix,
     mr.raps,
     plinkbinr,

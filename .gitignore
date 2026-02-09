@@ -1,0 +1,47 @@
+.RData
+.Rhistory
+.Rproj.user/
+.DS_Store
+
+# Large local datasets and generated outputs
+data/
+results/
+results2/
+results_Sept/
+Results_for_manuscript/
+
+# Manuscript and legacy scripts retained locally
+Code_for_manuscript/
+manuscript/
+G2P-gG2P_linux_x86_64/
+
+# Temporary caches
+*.rds
+*.RDS
+*.log
+*.out
+*.pdf
+*.png
+MRMOSS_*.tar.gz
+*.Rcheck/
+MRMOSS.Rcheck/
+/clump_log.txt
+/Realdata_MR2_log.txt
+/Simulation_runlog*.txt
+/Simulation_sec2_FDR2*.txt
+/runEyedisease*.txt
+/runPositivecontrol*.txt
+
+# Legacy root-level analysis scripts kept local only
+/GIFT_*.cpp
+/MOSS_*.r
+/MOSS_*.R
+/MRMOSS.R
+/MRMOSS_PX.cpp
+/MRMOSS_realdata*.R
+/NO_IVs_plot.R
+/Real_data*.R
+/Simulation*.R
+/discarded_code.r
+/qqunif.r
+/testcode*.R

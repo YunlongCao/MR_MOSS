@@ -1,0 +1,27 @@
+Package: MRMOSS
+Type: Package
+Title: Multi-Outcome Mendelian Randomization with Summary Statistics
+Version: 0.1.0
+Authors@R: person(given = "MRMOSS", family = "Authors",
+    role = c("aut", "cre"), email = "mrmoss@example.com")
+Description: Implements MR-MOSS for multi-outcome Mendelian randomization
+    using GWAS summary statistics, and provides reproducible pipelines for the
+    manuscript real-data analyses.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Depends: R (>= 4.1.0)
+Imports:
+    data.table,
+    Rcpp,
+    stats
+Suggests:
+    ieugwasr,
+    MRMix,
+    mr.raps,
+    plinkbinr,
+    TwoSampleMR
+LinkingTo:
+    Rcpp,
+    RcppArmadillo
+SystemRequirements: C++11
+RoxygenNote: 7.3.3

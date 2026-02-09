@@ -1,0 +1,66 @@
+trait,raw_path,source_type,snp_col,a1_col,a2_col,beta_col,se_col,z_col,p_col,n_col,n_value,note
+Ground_coffee_consumption,${MRMOSS_INTERNAL_DATA}/Ground_coffee_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,72276,Negative-control exposure from local curation
+Overall_healthy_diet,${MRMOSS_INTERNAL_DATA}/Overall_healthy_diet.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,258758,Negative-control exposure from local curation
+Fish_consumption,${MRMOSS_INTERNAL_DATA}/Fish_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,308008,Negative-control exposure from local curation
+Fruit_consumption,${MRMOSS_INTERNAL_DATA}/Fruit_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,421155,Negative-control exposure from local curation
+Healthy_food_consumption,${MRMOSS_INTERNAL_DATA}/Healthy_food_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,386047,Negative-control exposure from local curation
+Meat_consumption,${MRMOSS_INTERNAL_DATA}/Meat_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,266042,Negative-control exposure from local curation
+Psychoactive_drinks_consumption,${MRMOSS_INTERNAL_DATA}/Psychoactive_drinks_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,127604,Negative-control exposure from local curation
+Vegetables_consumption,${MRMOSS_INTERNAL_DATA}/Vegetables_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,428979,Negative-control exposure from local curation
+Beef_consumption,${MRMOSS_INTERNAL_DATA}/Beef_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,241092,Negative-control exposure from local curation
+Beer_or_cider_consumption,${MRMOSS_INTERNAL_DATA}/Beer_or_cider_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,168237,Negative-control exposure from local curation
+Spread_on_bread_consumption,${MRMOSS_INTERNAL_DATA}/Spread_on_bread_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,445506,Negative-control exposure from local curation
+Bread_consumption,${MRMOSS_INTERNAL_DATA}/Bread_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,438853,Negative-control exposure from local curation
+alcohol_consumption_quality,${MRMOSS_INTERNAL_DATA}/alcohol_consumption_quality.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,141145,Negative-control exposure from local curation
+coffee_consumption_measurement,${MRMOSS_INTERNAL_DATA}/coffee_consumption_measurement.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,105037,Negative-control exposure from local curation
+Instant_coffee_consumption,${MRMOSS_INTERNAL_DATA}/Instant_coffee_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,180764,Negative-control exposure from local curation
+Champagne_or_white_wine_consumption,${MRMOSS_INTERNAL_DATA}/Champagne_or_white_wine_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,175549,Negative-control exposure from local curation
+Cheese_consumption,${MRMOSS_INTERNAL_DATA}/Cheese_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,365842,Negative-control exposure from local curation
+Cooked_vegetables_consumption,${MRMOSS_INTERNAL_DATA}/Cooked_vegetables_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,435417,Negative-control exposure from local curation
+Decaffeinated_coffee_consumption,${MRMOSS_INTERNAL_DATA}/Decaffeinated_coffee_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,62072,Negative-control exposure from local curation
+Dried_fruit_consumption,${MRMOSS_INTERNAL_DATA}/Dried_fruit_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,409125,Negative-control exposure from local curation
+Drink_temperature,${MRMOSS_INTERNAL_DATA}/Drink_temperature.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,444097,Negative-control exposure from local curation
+Fresh_fruit_consumption,${MRMOSS_INTERNAL_DATA}/Fresh_fruit_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,433186,Negative-control exposure from local curation
+Lamb_consumption,${MRMOSS_INTERNAL_DATA}/Lamb_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,189984,Negative-control exposure from local curation
+Percentage_fat_in_milk_consumption,${MRMOSS_INTERNAL_DATA}/Percentage_fat_in_milk_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,411503,Negative-control exposure from local curation
+Non_oily_fish_consumption,${MRMOSS_INTERNAL_DATA}/Non_oily_fish_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,318136,Negative-control exposure from local curation
+Oily_fish_consumption,${MRMOSS_INTERNAL_DATA}/Oily_fish_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,297881,Negative-control exposure from local curation
+Pork_consumption,${MRMOSS_INTERNAL_DATA}/Pork_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,187202,Negative-control exposure from local curation
+Processed_meat_consumption,${MRMOSS_INTERNAL_DATA}/Processed_meat_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,312220,Negative-control exposure from local curation
+Red_wine_consumption,${MRMOSS_INTERNAL_DATA}/Red_wine_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,211628,Negative-control exposure from local curation
+Salad_consumption,${MRMOSS_INTERNAL_DATA}/Salad_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,422542,Negative-control exposure from local curation
+Added_salt_consumption,${MRMOSS_INTERNAL_DATA}/Added_salt_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,323995,Negative-control exposure from local curation
+Tea_consumption,${MRMOSS_INTERNAL_DATA}/Tea_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,434171,Negative-control exposure from local curation
+Water_consumption_corrected_for_coffee,${MRMOSS_INTERNAL_DATA}/Water_consumption_corrected_for_coffee.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,400642,Negative-control exposure from local curation
+Water_consumption,${MRMOSS_INTERNAL_DATA}/Water_consumption.tsv,beta_se,hm_rsid,effect_allele,other_allele,beta,standard_error,,p_value,,445799,Negative-control exposure from local curation
+Emotional_neglect,${MRMOSS_INTERNAL_DATA}/Emotional_neglect,formatted,,,,,,,,,,Preformatted outcome used in manuscript
+Physical_abuse,${MRMOSS_INTERNAL_DATA}/Physical_abuse,formatted,,,,,,,,,,Preformatted outcome used in manuscript
+Sexual_abuse,${MRMOSS_INTERNAL_DATA}/Sexual_abuse,formatted,,,,,,,,,,Preformatted outcome used in manuscript
+Apolipoprotein_A_levels,${UKB_SUMMARYDATA}/GWAS_catalog/Apolipoprotein_A_levels.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog lipid exposure
+Apolipoprotein_B_levels,${UKB_SUMMARYDATA}/GWAS_catalog/Apolipoprotein_B_levels.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog lipid exposure
+HDL_cholesterol_levels,${UKB_SUMMARYDATA}/GWAS_catalog/HDL_cholesterol_levels.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog lipid exposure
+LDL_direct_levels,${UKB_SUMMARYDATA}/GWAS_catalog/LDL_direct_levels.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog lipid exposure
+Lipoprotein_A_levels,${UKB_SUMMARYDATA}/GWAS_catalog/Lipoprotein_A_levels.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog lipid exposure
+Ischemic_Heart_Disease,${MVP_SUMMARYDATA}/CirculatorySystem/EUR/Phe_411_EUR_ORtransferred.txt,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP circulatory OR-transferred outcome
+Unstable_angina,${MVP_SUMMARYDATA}/CirculatorySystem/EUR/Phe_411_1_EUR_ORtransferred.txt,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP circulatory OR-transferred outcome
+Myocardial_infarction,${MVP_SUMMARYDATA}/CirculatorySystem/EUR/Phe_411_2_EUR_ORtransferred.txt,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP circulatory OR-transferred outcome
+Angina_pectoris,${MVP_SUMMARYDATA}/CirculatorySystem/EUR/Phe_411_3_EUR_ORtransferred.txt,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP circulatory OR-transferred outcome
+Coronary_atherosclerosis,${MVP_SUMMARYDATA}/CirculatorySystem/EUR/Phe_411_4_EUR_ORtransferred.txt,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP circulatory OR-transferred outcome
+AMD,${MVP_SUMMARYDATA}/EyeDisease/EUR/AMD_PheCode_362.2_EUR_ORtransferred,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP eye-disease OR-transferred outcome
+AMD_wet,${MVP_SUMMARYDATA}/EyeDisease/EUR/AMD_wet_EUR_ORtransferred,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP eye-disease OR-transferred outcome
+AMD_dry,${MVP_SUMMARYDATA}/EyeDisease/EUR/AMD_dry_EUR_ORtransferred,beta_se,rsid,ea,ref,beta,se,,pval,num_samples,,MVP eye-disease OR-transferred outcome
+Smoking_initiation,${GWAS_CATALOG_SUMMARYDATA}/Smoking_initiation_GCST007474.tsv,beta_se,RSID,ALT,REF,BETA,SE,,PVALUE,N,,Smoking trait from GWAS Catalog summary
+SmokingCessation,${GWAS_CATALOG_SUMMARYDATA}/SmokingCessation_GCST007460.tsv,beta_se,RSID,ALT,REF,BETA,SE,,PVALUE,N,,Smoking trait from GWAS Catalog summary
+CigarettesPerDay,${GWAS_CATALOG_SUMMARYDATA}/CigarettesPerDay_GCST007459.tsv,beta_se,RSID,ALT,REF,BETA,SE,,PVALUE,N,,Smoking trait from GWAS Catalog summary
+AgeOfInitiation,${GWAS_CATALOG_SUMMARYDATA}/AgeOfInitiation_GCST007458.tsv,beta_se,RSID,ALT,REF,BETA,SE,,PVALUE,N,,Smoking trait from GWAS Catalog summary
+Triglycerides_levels,${UKB_SUMMARYDATA}/GWAS_catalog/Triglycerides_levels.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog exposure
+Total_cholesterol,${UKB_SUMMARYDATA}/GWAS_catalog/Total_cholesterol.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog exposure
+BMI,${UKB_SUMMARYDATA}/GWAS_catalog/BMI.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,n,,UKB GWAS Catalog exposure
+WHR,${GWAS_CATALOG_SUMMARYDATA}/WHR_GCST90691926.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,420531,GWAS Catalog summary exposure
+Body_fat_percentage,${GWAS_CATALOG_SUMMARYDATA}/Body_fat_percentage_GCST90691778.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,412960,GWAS Catalog summary exposure
+Leisure_screen_time,${GWAS_CATALOG_SUMMARYDATA}/Leisure_screen_time_GCST90104339.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,386749,GWAS Catalog summary exposure
+MVPA,${GWAS_CATALOG_SUMMARYDATA}/MVPA_GCST90104341.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,362611,GWAS Catalog summary exposure
+Sedentary_behavior,${GWAS_CATALOG_SUMMARYDATA}/Sedentary_behavior_GCST90104345.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,219348,GWAS Catalog summary exposure
+Walking_pace,${GWAS_CATALOG_SUMMARYDATA}/Walking_pace_GCST90691885.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,417933,GWAS Catalog summary exposure
+Sleep_duration,${GWAS_CATALOG_SUMMARYDATA}/Sleep_duration_GCST90691735.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,418009,GWAS Catalog summary exposure
+Chronotype,${GWAS_CATALOG_SUMMARYDATA}/Chronotype_GCST90691736.tsv,beta_se,rsid,effect_allele,other_allele,beta,standard_error,,p_value,,375390,GWAS Catalog summary exposure

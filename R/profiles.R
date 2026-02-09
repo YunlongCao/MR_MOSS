@@ -20,8 +20,7 @@ mrmoss_profiles <- function() {
       ),
       outcomes = c("Emotional_neglect", "Physical_abuse", "Sexual_abuse"),
       iv_thresholds = c(5e-07, 5e-08),
-      rd = 1.2,
-      output_prefix = "outcome346_D1.2"
+      output_prefix = "outcome346"
     ),
     positive_control = list(
       exposures = c(
@@ -39,8 +38,7 @@ mrmoss_profiles <- function() {
         "Coronary_atherosclerosis"
       ),
       iv_thresholds = c(5e-07, 5e-08),
-      rd = 1.2,
-      output_prefix = "MVP_outcomes_12345_rd1.2"
+      output_prefix = "MVP_outcomes_12345"
     ),
     amd_application = list(
       exposures = c(
@@ -52,8 +50,7 @@ mrmoss_profiles <- function() {
       ),
       outcomes = c("AMD", "AMD_wet", "AMD_dry"),
       iv_thresholds = c(5e-08),
-      rd = 1.2,
-      output_prefix = "MRMOSS_rd1.2_lifestyle_and_lipids"
+      output_prefix = "MRMOSS_lifestyle_and_lipids"
     )
   )
 }

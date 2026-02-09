@@ -1,8 +1,6 @@
 useDynLib(MRMOSS, .registration = TRUE)
 importFrom(Rcpp, evalCpp)
 
-export(loglikelihood_cpp)
-export(MRMOSS_PX_cpp)
 export(mrmoss_batch_format_manifest)
 export(mrmoss_check_formatted_inputs)
 export(mrmoss_clump_data)

@@ -325,7 +325,6 @@ mrmoss_input <- function(exposure,
 #' @param outcomes Outcome trait names.
 #' @param mrmoss_input Prepared input object from `mrmoss_input()`.
 #' @param pvalue_output One of `"both"`, `"outcome"`, `"global"`.
-#' @param rd Multiplicative scale factor for residual SD update.
 #' @param maxiter Maximum PX-EM iterations.
 #' @param output_dir Optional output directory.
 #' @param output_prefix Output basename when writing files.
@@ -336,7 +335,6 @@ mrmoss <- function(exposure,
                    outcomes,
                    mrmoss_input,
                    pvalue_output = c("both", "outcome", "global"),
-                   rd = 1.2,
                    maxiter = 1000000,
                    output_dir = NULL,
                    output_prefix = "mrmoss_result",
@@ -381,16 +379,14 @@ mrmoss <- function(exposure,
     n2 = n2,
     theta0 = theta,
     test = test,
-    maxiter = as.integer(maxiter),
-    rd = rd
+    maxiter = as.integer(maxiter)
   )
 
   row <- data.table::data.table(
     exposure = exposure,
     IV_Threshold = as.numeric(mrmoss_input$iv_threshold),
     NO_of_IVs = as.integer(mrmoss_input$NO_of_IVs),
-    iteration = as.integer(fit$iteration),
-    rd = rd
+    iteration = as.integer(fit$iteration)
   )
   if (pvalue_output %in% c("both", "global")) {
     row$Overall_pvalue <- as.numeric(fit$pvalue_overall)
@@ -439,7 +435,6 @@ mrmoss <- function(exposure,
 #' @param output_dir Output directory.
 #' @param output_prefix Output basename (without extension).
 #' @param iv_thresholds Instrument p-value thresholds.
-#' @param rd Multiplicative scale factor for residual SD update.
 #' @param n2 Optional outcome sample size. Default is mean outcome N.
 #' @param plink_bin Optional PLINK binary path for local clumping.
 #' @param pop Population code.
@@ -461,7 +456,6 @@ mrmoss_run_analysis <- function(exposures,
                                 output_dir,
                                 output_prefix,
                                 iv_thresholds = c(5e-07, 5e-08),
-                                rd = 1.2,
                                 n2 = NULL,
                                 plink_bin = NULL,
                                 pop = "EUR",
@@ -665,8 +659,7 @@ mrmoss_run_analysis <- function(exposures,
         n2 = as.integer(round(n2)),
         theta0 = theta,
         test = test,
-        maxiter = as.integer(maxiter),
-        rd = rd
+        maxiter = as.integer(maxiter)
       )
 
       moss_row <- data.table::data.table(
@@ -674,8 +667,7 @@ mrmoss_run_analysis <- function(exposures,
         IV_Threshold = thr,
         NO_of_IVs = length(common_snps),
         Overall_pvalue = fit$pvalue_overall,
-        iteration = fit$iteration,
-        rd = rd
+        iteration = fit$iteration
       )
 
       for (k in seq_along(outcomes)) {
@@ -793,7 +785,6 @@ mrmoss_run_profile <- function(profile,
     output_dir = output_dir,
     output_prefix = cfg$output_prefix,
     iv_thresholds = cfg$iv_thresholds,
-    rd = cfg$rd,
     ...
   )
 }

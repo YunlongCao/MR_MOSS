@@ -28,8 +28,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // MRMOSS_PX_cpp
-List MRMOSS_PX_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R, int n1, int n2, arma::vec theta0, arma::uvec test, int maxiter, double rd);
-RcppExport SEXP _MRMOSS_MRMOSS_PX_cpp(SEXP gamma_hatSEXP, SEXP Gamma_hatSEXP, SEXP RSEXP, SEXP n1SEXP, SEXP n2SEXP, SEXP theta0SEXP, SEXP testSEXP, SEXP maxiterSEXP, SEXP rdSEXP) {
+List MRMOSS_PX_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R, int n1, int n2, arma::vec theta0, arma::uvec test, int maxiter);
+RcppExport SEXP _MRMOSS_MRMOSS_PX_cpp(SEXP gamma_hatSEXP, SEXP Gamma_hatSEXP, SEXP RSEXP, SEXP n1SEXP, SEXP n2SEXP, SEXP theta0SEXP, SEXP testSEXP, SEXP maxiterSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,15 +41,14 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< arma::vec >::type theta0(theta0SEXP);
     Rcpp::traits::input_parameter< arma::uvec >::type test(testSEXP);
     Rcpp::traits::input_parameter< int >::type maxiter(maxiterSEXP);
-    Rcpp::traits::input_parameter< double >::type rd(rdSEXP);
-    rcpp_result_gen = Rcpp::wrap(MRMOSS_PX_cpp(gamma_hat, Gamma_hat, R, n1, n2, theta0, test, maxiter, rd));
+    rcpp_result_gen = Rcpp::wrap(MRMOSS_PX_cpp(gamma_hat, Gamma_hat, R, n1, n2, theta0, test, maxiter));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_MRMOSS_loglikelihood_cpp", (DL_FUNC) &_MRMOSS_loglikelihood_cpp, 6},
-    {"_MRMOSS_MRMOSS_PX_cpp", (DL_FUNC) &_MRMOSS_MRMOSS_PX_cpp, 9},
+    {"_MRMOSS_MRMOSS_PX_cpp", (DL_FUNC) &_MRMOSS_MRMOSS_PX_cpp, 8},
     {NULL, NULL, 0}
 };
 

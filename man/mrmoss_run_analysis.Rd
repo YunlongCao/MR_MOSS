@@ -13,7 +13,6 @@ mrmoss_run_analysis(
   output_dir,
   output_prefix,
   iv_thresholds = c(5e-07, 5e-08),
-  rd = 1.2,
   n2 = NULL,
   plink_bin = NULL,
   pop = "EUR",
@@ -49,8 +48,6 @@ If `NULL`, LD clumping uses the online OpenGWAS service via `ieugwasr`.}
 \item{output_prefix}{Output basename (without extension).}
 
 \item{iv_thresholds}{Instrument p-value thresholds.}
-
-\item{rd}{Multiplicative scale factor for residual SD update.}
 
 \item{n2}{Optional outcome sample size. Default is mean outcome N.}
 

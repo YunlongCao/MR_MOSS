@@ -5,7 +5,6 @@ loglikelihood_cpp <- function(gamma_hat, Gamma_hat, R, n1, n2, theta) {
     .Call(`_MRMOSS_loglikelihood_cpp`, gamma_hat, Gamma_hat, R, n1, n2, theta)
 }
 
-MRMOSS_PX_cpp <- function(gamma_hat, Gamma_hat, R, n1, n2, theta0, test, maxiter, rd) {
-    .Call(`_MRMOSS_MRMOSS_PX_cpp`, gamma_hat, Gamma_hat, R, n1, n2, theta0, test, maxiter, rd)
+MRMOSS_PX_cpp <- function(gamma_hat, Gamma_hat, R, n1, n2, theta0, test, maxiter) {
+    .Call(`_MRMOSS_MRMOSS_PX_cpp`, gamma_hat, Gamma_hat, R, n1, n2, theta0, test, maxiter)
 }
-

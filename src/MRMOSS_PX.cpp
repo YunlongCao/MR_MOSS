@@ -70,8 +70,9 @@ double loglikelihood_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R, 
 // [[Rcpp::export]]
 List MRMOSS_PX_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R, 
                   int n1, int n2, arma::vec theta0, 
-                  arma::uvec test, int maxiter, double rd) {
+                  arma::uvec test, int maxiter) {
     // ==== shrinkage correlation matrix ====
+    const double sigma_scale = 1.2;
 
 
     int p = Gamma_hat.n_rows;
@@ -174,7 +175,7 @@ List MRMOSS_PX_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R,
             beta_new(i) = beta_num / beta_den;
             tau2_new(i) = Sigma_tilde(i+1, i+1) + sum(square(mu.col(i+1))) / p;
             sigma_new(i) = 2 * Vi / (sqrt(Ui*Ui + 4 * p * Vi) - Ui);
-            sigma_new(i) *= rd;
+            sigma_new(i) *= sigma_scale;
         }
         
         // update sigma2, sigmax2
@@ -285,7 +286,7 @@ List MRMOSS_PX_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R,
           beta_new(i) = beta_num / beta_den;
           tau2_new(i) = Sigma_tilde(i+1, i+1) + arma::sum(arma::square(mu.col(i+1))) / p;
           sigma_new(i) = 2.0 * Vi / (std::sqrt(Ui*Ui + 4.0 * p * Vi) - Ui);
-          sigma_new(i) *= rd;
+          sigma_new(i) *= sigma_scale;
         }
         
         sigma2_new = Sigma_tilde(0,0) + arma::sum(arma::square(mu.col(0))) / p;
@@ -379,7 +380,7 @@ List MRMOSS_PX_cpp(arma::vec gamma_hat, arma::mat Gamma_hat, arma::mat R,
         }
         tau2_new(i) = Sigma_tilde(i+1, i+1) + arma::sum(arma::square(mu.col(i+1))) / p;
         sigma_new(i) = 2.0 * Vi / (std::sqrt(Ui*Ui + 4.0 * p * Vi) - Ui);
-        sigma_new(i) *= rd;
+        sigma_new(i) *= sigma_scale;
       }
       
       sigma2_new = Sigma_tilde(0,0) + arma::sum(arma::square(mu.col(0))) / p;

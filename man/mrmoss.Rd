@@ -9,7 +9,6 @@ mrmoss(
   outcomes,
   mrmoss_input,
   pvalue_output = c("both", "outcome", "global"),
-  rd = 1.2,
   maxiter = 1e+06,
   output_dir = NULL,
   output_prefix = "mrmoss_result",
@@ -24,8 +23,6 @@ mrmoss(
 \item{mrmoss_input}{Prepared input object from `mrmoss_input()`.}
 
 \item{pvalue_output}{One of `"both"`, `"outcome"`, `"global"`.}
-
-\item{rd}{Multiplicative scale factor for residual SD update.}
 
 \item{maxiter}{Maximum PX-EM iterations.}
 
